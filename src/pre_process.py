@@ -5,9 +5,9 @@ import pickle
 from multiprocessing.pool import Pool
 from multiprocessing import cpu_count
 
-data_path = Path('data')
+data_path = Path('/home/aistudio/data')
 dataset_path_root = data_path / 'UCF-101'
-dataset_path = 'data/data48916/UCF-101.zip'
+dataset_path = '/home/aistudio/data/data48916/UCF-101.zip'
 
 def unrar(filename):
 
@@ -205,12 +205,12 @@ if __name__ == '__main__':
 
     # unrar dataset
 
-    unrar(dataset_path)
+    # unrar(dataset_path)
     
     videos = []
     for cls in dataset_path_root.iterdir():
         for avi in cls.glob('*avi'):
-            videos += [[avi]]
+            videos += [avi]
     
     # avi2jpg
     pool = Pool(processes=cpu_count())
