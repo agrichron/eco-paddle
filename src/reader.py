@@ -173,8 +173,9 @@ class KineticsReader(object):
             # print(imgs)
             # imgs: 三个PIL的Image对象
             if mode == 'train':
-                if self.name == "TSM":
-                    imgs = group_multi_scale_crop(imgs, short_size)
+                # if self.name == "TSM":
+                imgs = group_random_split_joint(imgs)
+                imgs = group_multi_scale_crop(imgs, short_size)
                 imgs = group_random_crop(imgs, target_size)
                 imgs = group_random_flip(imgs)
 
@@ -318,6 +319,36 @@ def group_random_crop(img_group, target_size):
             out_images.append(img.crop((x1, y1, x1 + tw, y1 + th)))
 
     return out_images
+
+def group_random_split_joint(img_group, arg=None):
+
+    def _split_joint(img, arg):
+        h, w, _ = img.shape
+        if not arg:
+            x = w // 2
+            y = h // 2
+            
+            left_top = img[:y, :x]
+            right_top = img[:y, x:]
+            left_bottom = img[y:, :x]
+            right_bottom = img[y:, x:]
+
+            left = np.concatenate([right_bottom, right_top], axis=0)
+            right = np.concatenate([left_bottom, left_top], axis=0)
+
+            adjusted_image = np.concatenate([left, right], axis=1)
+
+            return adjusted_image
+    
+    out_images = list()
+    for img in img_group:
+        if random.randint(0,1):
+            out_images.append(_split_joint(img, arg))
+        else:
+            out_images.append(img)
+    
+    return out_images
+
 
 
 def group_random_flip(img_group):

@@ -47,6 +47,7 @@ def validate(val_reader, feeder, place, program, fetch_list, epoch=0, writer=Non
     fluid.io.save(fluid.default_main_program(), args.snapshot_pref)
 
     if val_avg_acc > best_acc:
+        best_acc = val_avg_acc
         for item in ['.pdmodel', '.pdparams', '.pdopt']:
             src = args.snapshot_pref + item
             dst = args.snapshot_pref + '_best' + item
